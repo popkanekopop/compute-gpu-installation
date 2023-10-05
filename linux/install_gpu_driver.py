@@ -303,12 +303,12 @@ def install_dependencies_debian_ubuntu(system: System, version: str) -> bool:
     required packages are installed and correct version of g++ will be used.
     """
     kernel_version = run("uname -r").stdout.decode().strip()
-    run("apt update")
-    upgrade = run("apt upgrade -y").stdout.decode()
+    run("sudo apt update")
+    upgrade = run("sudo apt upgrade -y").stdout.decode()
     if "Generating grub configuration file" in upgrade:
         # There was a kernel update, we need to reboot to work with proper kernel version
         return True
-    run(f"apt install -y linux-headers-{kernel_version} "
+    run(f"sudo apt install -y linux-headers-{kernel_version} "
         "software-properties-common pciutils gcc make dkms")
     if system == System.Ubuntu and version.startswith("22"):
         run("update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 "
@@ -347,7 +347,7 @@ def install_dependencies(system: System, version: str):
         reboot_flag = install_dependencies_sles(system, version)
     else:
         raise RuntimeError("Unsupported operating system!")
-    
+
     if reboot_flag:
         reboot()
     else:
